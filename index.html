@@ -77,7 +77,6 @@
       line-height: 1.5;
     }
 
-    /* Dynamic player rows */
     .player-row {
       display: flex;
       gap: 8px;
@@ -112,7 +111,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -163,11 +161,7 @@
       letter-spacing: -0.5px;
     }
 
-    #game-turn-count {
-      font-size: 12px;
-      color: rgba(0,0,0,0.5);
-      margin-top: 3px;
-    }
+    #game-turn-count { font-size: 12px; color: rgba(0,0,0,0.5); margin-top: 3px; }
 
     /* ── Score strip ── */
     #score-strip {
@@ -184,7 +178,7 @@
       min-width: 72px;
       max-width: 140px;
       text-align: center;
-      padding: 8px 4px;
+      padding: 8px 4px 7px;
       border-radius: 10px;
       background: var(--bg);
       border: 2px solid transparent;
@@ -211,6 +205,25 @@
       margin-top: 2px;
     }
 
+    /* Ball breakdown: 🔴3 🟡1 ⚫0 ⚪2 */
+    .score-breakdown {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 3px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* pts/turn rate — the BB/hr equivalent */
+    .score-rate {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+      font-variant-numeric: tabular-nums;
+    }
+
     /* ── Action buttons ── */
     #action-grid {
       display: grid;
@@ -223,7 +236,6 @@
       border: none;
       border-radius: 16px;
       padding: 20px 8px;
-      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -245,12 +257,22 @@
     .btn-yellow { background: var(--ball-yellow); color: #fff; }
     .btn-black  { background: var(--ball-black);  color: #fff; }
     .btn-white  { background: #f0efec; color: var(--text); border: 2px solid var(--border); }
-    .btn-miss   {
+    .btn-miss {
       grid-column: 1 / -1;
       background: #d1d5db;
       color: var(--text);
-      min-height: 62px;
+      min-height: 60px;
       padding: 14px 8px;
+    }
+    .btn-custom {
+      grid-column: 1 / -1;
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      min-height: 52px;
+      padding: 12px 8px;
+      font-size: 13px;
+      font-weight: 600;
     }
 
     /* ── Game footer ── */
@@ -295,8 +317,8 @@
 
     #end-game-btn:active { opacity: 0.8; }
 
-    /* ── End Game Modal ── */
-    #modal-endgame {
+    /* ── Shared modal overlay ── */
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
@@ -306,9 +328,9 @@
       justify-content: center;
     }
 
-    #modal-endgame.open { display: flex; }
+    .modal-overlay.open { display: flex; }
 
-    #modal-endgame-sheet {
+    .modal-sheet {
       background: var(--surface);
       border-radius: 20px 20px 0 0;
       padding: 22px 16px;
@@ -316,18 +338,19 @@
       width: 100%;
       max-width: 480px;
       border-top: 1px solid var(--border);
-      max-height: 85vh;
+      max-height: 88vh;
       overflow-y: auto;
     }
 
     .modal-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 16px;
-      letter-spacing: -0.4px;
+      margin-bottom: 18px;
+      letter-spacing: -0.3px;
     }
 
+    /* ── End Game modal ── */
     .endgame-row {
       display: flex;
       justify-content: space-between;
@@ -339,16 +362,11 @@
     }
 
     .endgame-row.endgame-winner { background: var(--accent); }
-
     .endgame-name  { font-size: 15px; font-weight: 600; }
     .endgame-score { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .endgame-breakdown { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-    .endgame-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 16px;
-    }
+    .endgame-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
 
     .endgame-btns button {
       width: 100%;
@@ -362,9 +380,96 @@
     }
 
     .endgame-btns button:active { opacity: 0.8; }
-
     #btn-save-new     { background: var(--accent); color: #000; }
     #btn-save-history { background: var(--bg); color: var(--text); border: 1px solid var(--border) !important; }
+
+    /* ── Custom pot modal ── */
+    .stepper-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stepper-row:last-of-type { border-bottom: none; }
+
+    .stepper-icon  { font-size: 22px; flex: 0 0 28px; text-align: center; }
+    .stepper-label { flex: 1; font-size: 14px; font-weight: 600; }
+    .stepper-pts   { font-size: 11px; color: var(--muted); flex: 0 0 32px; text-align: right; }
+
+    .stepper-controls { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+    .stepper-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      line-height: 1;
+    }
+
+    .stepper-btn:active { background: var(--border); }
+
+    .stepper-count {
+      font-size: 18px;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #custom-net {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      padding: 16px 0 4px;
+    }
+
+    #custom-net-label {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    #btn-apply-custom {
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #btn-apply-custom:active { opacity: 0.8; }
+
+    #btn-cancel-custom {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     /* ── History screen ── */
     .section-label {
@@ -382,19 +487,20 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 13px 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
     }
 
     .lb-rank  { font-size: 20px; flex: 0 0 30px; text-align: center; }
     .lb-name  { flex: 1; font-size: 15px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lb-stats { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .lb-score { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; min-width: 36px; text-align: right; }
 
+    .lb-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .lb-score { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; }
     .lb-score.pos  { color: #16a34a; }
     .lb-score.neg  { color: #dc2626; }
     .lb-score.zero { color: var(--muted); }
+    .lb-sub   { font-size: 10px; color: var(--muted); white-space: nowrap; }
 
     .day-header {
       padding: 8px 16px 5px;
@@ -414,12 +520,11 @@
     }
 
     .game-winner-line { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-    .game-scores      { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .game-scores { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
     .game-scores .winner-name { color: var(--text); font-weight: 600; }
 
     .history-bottom-pad { height: 32px; }
 
-    /* ── Empty / error ── */
     .empty-msg { text-align: center; padding: 40px 16px; color: var(--muted); font-size: 14px; line-height: 1.6; }
     .empty-msg.error { color: #dc2626; }
 
@@ -495,6 +600,10 @@
       <span class="ball-label">Miss / No Pot</span>
       <span class="ball-pts">0 pts &mdash; advance turn</span>
     </button>
+    <button class="action-btn btn-custom" onclick="openCustomModal()">
+      <span class="ball-label">&#10010; Custom Pot</span>
+      <span class="ball-pts">Multiple balls in one shot</span>
+    </button>
   </div>
 
   <div id="game-footer">
@@ -518,14 +627,67 @@
 </div>
 
 <!-- ════════════════════════════════════════════════════ END GAME MODAL ═══ -->
-<div id="modal-endgame">
-  <div id="modal-endgame-sheet">
+<div id="modal-endgame" class="modal-overlay">
+  <div class="modal-sheet">
     <div class="modal-title">Game Over &#127942;</div>
     <div id="endgame-scores"></div>
     <div class="endgame-btns">
       <button id="btn-save-new" onclick="saveAndReset()">Save &amp; New Game</button>
       <button id="btn-save-history" onclick="saveAndViewHistory()">Save &amp; View History</button>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ CUSTOM POT MODAL ═══ -->
+<div id="modal-custom" class="modal-overlay">
+  <div class="modal-sheet">
+    <div class="modal-title" id="custom-modal-title">Custom Pot</div>
+
+    <div class="stepper-row">
+      <span class="stepper-icon">&#128308;</span>
+      <span class="stepper-label">Red</span>
+      <span class="stepper-pts">+1 each</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustCustom('red', -1)">&#8722;</button>
+        <span class="stepper-count" id="cust-red">0</span>
+        <button class="stepper-btn" onclick="adjustCustom('red', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#128993;</span>
+      <span class="stepper-label">Yellow</span>
+      <span class="stepper-pts">+2 each</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustCustom('yellow', -1)">&#8722;</button>
+        <span class="stepper-count" id="cust-yellow">0</span>
+        <button class="stepper-btn" onclick="adjustCustom('yellow', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#9899;</span>
+      <span class="stepper-label">Black</span>
+      <span class="stepper-pts">+10 each</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustCustom('black', -1)">&#8722;</button>
+        <span class="stepper-count" id="cust-black">0</span>
+        <button class="stepper-btn" onclick="adjustCustom('black', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#9898;</span>
+      <span class="stepper-label">Cue Ball</span>
+      <span class="stepper-pts">&#8722;3 each</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustCustom('white', -1)">&#8722;</button>
+        <span class="stepper-count" id="cust-white">0</span>
+        <button class="stepper-btn" onclick="adjustCustom('white', +1)">+</button>
+      </div>
+    </div>
+
+    <div id="custom-net">0</div>
+    <div id="custom-net-label">net pts this turn</div>
+    <button id="btn-apply-custom" onclick="applyCustom()">Apply</button>
+    <button id="btn-cancel-custom" onclick="closeCustomModal()">Cancel</button>
   </div>
 </div>
 
@@ -537,16 +699,21 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMwQusDi2Ymu0IiYkfR
 // ─────────────────────────────────────────────────────────────────────────────
 
 const POINT_VALUES = { red: 1, yellow: 2, black: 10, white: -3, miss: 0 };
-const LS_NAMES_KEY = 'pool_player_names';  // stored as JSON array of strings
+const LS_NAMES_KEY = 'pool_player_names';
 const MIN_PLAYERS  = 2;
 const MAX_PLAYERS  = 8;
 
 // ── Game state ────────────────────────────────────────────────────────────────
-let players    = [];  // [{ name: string, score: number }]
+// Each player: { name, score, red, yellow, black, white, turns }
+let players    = [];
 let currentIdx = 0;
 let turnCount  = 0;
-let undoStack  = [];  // [{ playerIdx, scoresSnapshot: number[] }]
-let allGames   = [];  // loaded from Sheets
+// Each undo entry: { playerIdx, playersSnapshot: deep copy of players array }
+let undoStack  = [];
+let allGames   = [];
+
+// Custom pot state
+let customCounts = { red: 0, yellow: 0, black: 0, white: 0 };
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -571,8 +738,7 @@ function renderPlayerInputs(names) {
 function appendPlayerRow(name, idx) {
   const list = document.getElementById('players-list');
   const row  = document.createElement('div');
-  row.className     = 'player-row';
-  row.dataset.index = idx;
+  row.className = 'player-row';
   row.innerHTML = `
     <input type="text" value="${esc(name)}" placeholder="Player ${idx + 1}"
            autocomplete="off" autocorrect="off" spellcheck="false">
@@ -583,10 +749,7 @@ function appendPlayerRow(name, idx) {
 
 function addPlayerRow() {
   const rows = document.querySelectorAll('.player-row');
-  if (rows.length >= MAX_PLAYERS) {
-    showToast('Maximum ' + MAX_PLAYERS + ' players');
-    return;
-  }
+  if (rows.length >= MAX_PLAYERS) { showToast('Maximum ' + MAX_PLAYERS + ' players'); return; }
   appendPlayerRow('', rows.length);
   updateRemoveButtons();
   document.querySelector('.player-row:last-child input').focus();
@@ -594,10 +757,7 @@ function addPlayerRow() {
 
 function removePlayerRow(btn) {
   const rows = document.querySelectorAll('.player-row');
-  if (rows.length <= MIN_PLAYERS) {
-    showToast('Minimum ' + MIN_PLAYERS + ' players');
-    return;
-  }
+  if (rows.length <= MIN_PLAYERS) { showToast('Minimum ' + MIN_PLAYERS + ' players'); return; }
   btn.closest('.player-row').remove();
   updateRemoveButtons();
 }
@@ -620,7 +780,7 @@ function readPlayerNames() {
 function startGame() {
   const names = readPlayerNames();
   localStorage.setItem(LS_NAMES_KEY, JSON.stringify(names));
-  players    = names.map(name => ({ name, score: 0 }));
+  players    = names.map(n => ({ name: n, score: 0, red: 0, yellow: 0, black: 0, white: 0, turns: 0 }));
   currentIdx = 0;
   turnCount  = 0;
   undoStack  = [];
@@ -629,24 +789,31 @@ function startGame() {
   showScreen('game');
 }
 
-// ── Score strip (built once per game, updated in place) ───────────────────────
+// ── Score strip ───────────────────────────────────────────────────────────────
 
 function buildScoreStrip() {
-  const strip = document.getElementById('score-strip');
-  strip.innerHTML = players.map((p, i) => `
+  document.getElementById('score-strip').innerHTML = players.map((p, i) => `
     <div class="score-card${i === 0 ? ' active-player' : ''}" id="sc-${i}">
-      <div class="score-name" id="sn-${i}">${esc(p.name)}</div>
+      <div class="score-name"  id="sn-${i}">${esc(p.name)}</div>
       <div class="score-value" id="sv-${i}">0</div>
+      <div class="score-breakdown" id="sb-${i}"></div>
+      <div class="score-rate"  id="sr-${i}"></div>
     </div>
   `).join('');
 }
 
 // ── Game logic ────────────────────────────────────────────────────────────────
 
+function snapshotPlayers() {
+  return players.map(p => ({ ...p }));
+}
+
 function recordPot(ballType) {
-  const delta = POINT_VALUES[ballType];
-  undoStack.push({ playerIdx: currentIdx, scoresSnapshot: players.map(p => p.score) });
-  players[currentIdx].score += delta;
+  undoStack.push({ playerIdx: currentIdx, snap: snapshotPlayers() });
+  const p = players[currentIdx];
+  p.score  += POINT_VALUES[ballType];
+  p.turns  += 1;
+  if (ballType !== 'miss') p[ballType] = (p[ballType] || 0) + 1;
   currentIdx = (currentIdx + 1) % players.length;
   turnCount++;
   renderGameScreen();
@@ -654,10 +821,10 @@ function recordPot(ballType) {
 
 function undoLast() {
   if (!undoStack.length) return;
-  const last = undoStack.pop();
-  last.scoresSnapshot.forEach((s, i) => { players[i].score = s; });
-  currentIdx = last.playerIdx;
-  turnCount  = Math.max(0, turnCount - 1);
+  const last  = undoStack.pop();
+  players     = last.snap;
+  currentIdx  = last.playerIdx;
+  turnCount   = Math.max(0, turnCount - 1);
   renderGameScreen();
 }
 
@@ -672,10 +839,76 @@ function renderGameScreen() {
     if (!card) return;
     document.getElementById('sn-' + i).textContent = p.name;
     document.getElementById('sv-' + i).textContent = p.score;
+
+    // Ball breakdown: 🔴3 🟡1 ⚫0 ⚪2
+    const b = `\u{1F534}${p.red} \u{1F7E1}${p.yellow} ⚫${p.black} ⚪${p.white}`;
+    document.getElementById('sb-' + i).textContent = b;
+
+    // pts/turn (the BB/hr equivalent)
+    document.getElementById('sr-' + i).textContent =
+      p.turns > 0 ? (p.score / p.turns).toFixed(1) + ' pt/t' : '';
+
     card.classList.toggle('active-player', i === currentIdx);
   });
 
   document.getElementById('undo-btn').disabled = undoStack.length === 0;
+}
+
+// ── Custom pot modal ──────────────────────────────────────────────────────────
+
+function openCustomModal() {
+  customCounts = { red: 0, yellow: 0, black: 0, white: 0 };
+  ['red','yellow','black','white'].forEach(b =>
+    document.getElementById('cust-' + b).textContent = '0'
+  );
+  updateCustomNet();
+  document.getElementById('custom-modal-title').textContent =
+    'Custom Pot — ' + players[currentIdx].name;
+  document.getElementById('modal-custom').classList.add('open');
+}
+
+function closeCustomModal() {
+  document.getElementById('modal-custom').classList.remove('open');
+}
+
+function adjustCustom(ball, dir) {
+  const newVal = customCounts[ball] + dir;
+  if (newVal < 0) return;
+  customCounts[ball] = newVal;
+  document.getElementById('cust-' + ball).textContent = newVal;
+  updateCustomNet();
+}
+
+function updateCustomNet() {
+  const net = customCounts.red * 1 + customCounts.yellow * 2 +
+              customCounts.black * 10 + customCounts.white * (-3);
+  document.getElementById('custom-net').textContent =
+    (net > 0 ? '+' : '') + net;
+  document.getElementById('btn-apply-custom').textContent =
+    'Apply to ' + players[currentIdx].name + "'s Turn";
+}
+
+function applyCustom() {
+  const total = Object.values(customCounts).reduce((s, v) => s + v, 0);
+  if (total === 0) { showToast('Select at least one ball'); return; }
+
+  const net = customCounts.red * 1 + customCounts.yellow * 2 +
+              customCounts.black * 10 + customCounts.white * (-3);
+
+  undoStack.push({ playerIdx: currentIdx, snap: snapshotPlayers() });
+
+  const p = players[currentIdx];
+  p.score  += net;
+  p.turns  += 1;
+  p.red    += customCounts.red;
+  p.yellow += customCounts.yellow;
+  p.black  += customCounts.black;
+  p.white  += customCounts.white;
+
+  currentIdx = (currentIdx + 1) % players.length;
+  turnCount++;
+  closeCustomModal();
+  renderGameScreen();
 }
 
 // ── End Game ──────────────────────────────────────────────────────────────────
@@ -687,9 +920,13 @@ function confirmEndGame() {
   const rows = [...players]
     .sort((a, b) => b.score - a.score)
     .map(p => {
-      const isWinner = p.score === maxScore;
-      return `<div class="endgame-row ${isWinner ? 'endgame-winner' : ''}">
-        <span class="endgame-name">${esc(p.name)}${isWinner ? ' &#127942;' : ''}</span>
+      const isW = p.score === maxScore;
+      const bkd = `\u{1F534}${p.red} \u{1F7E1}${p.yellow} ⚫${p.black} ⚪${p.white}`;
+      return `<div class="endgame-row ${isW ? 'endgame-winner' : ''}">
+        <div>
+          <div class="endgame-name">${esc(p.name)}${isW ? ' &#127942;' : ''}</div>
+          <div class="endgame-breakdown">${bkd}</div>
+        </div>
         <span class="endgame-score">${p.score}</span>
       </div>`;
     }).join('');
@@ -704,8 +941,16 @@ function saveGame() {
   const winnerList = players.filter(p => p.score === maxScore).map(p => p.name);
   const payload    = {
     date:        new Date().toISOString().slice(0, 10),
-    playersJson: JSON.stringify(players.map(p => ({ name: p.name, score: p.score }))),
-    winner:      winnerList.join(' & ')
+    playersJson: JSON.stringify(players.map(p => ({
+      name:   p.name,
+      score:  p.score,
+      red:    p.red,
+      yellow: p.yellow,
+      black:  p.black,
+      white:  p.white,
+      turns:  p.turns
+    }))),
+    winner: winnerList.join(' & ')
   };
   const params = new URLSearchParams({ action: 'add', data: JSON.stringify(payload) });
   fetch(`${SCRIPT_URL}?${params}`, { mode: 'no-cors' });
@@ -714,14 +959,14 @@ function saveGame() {
 function saveAndReset() {
   saveGame();
   document.getElementById('modal-endgame').classList.remove('open');
-  showToast(SCRIPT_URL ? 'Game saved ✓' : 'No SCRIPT_URL set — game not saved');
+  showToast(SCRIPT_URL ? 'Game saved ✓' : 'No SCRIPT_URL — game not saved');
   showScreen('setup');
 }
 
 function saveAndViewHistory() {
   saveGame();
   document.getElementById('modal-endgame').classList.remove('open');
-  showToast(SCRIPT_URL ? 'Game saved ✓' : 'No SCRIPT_URL set — game not saved');
+  showToast(SCRIPT_URL ? 'Game saved ✓' : 'No SCRIPT_URL — game not saved');
   setTimeout(() => loadAndShowHistory(), SCRIPT_URL ? 800 : 0);
 }
 
@@ -742,7 +987,7 @@ async function loadAndShowHistory() {
 
   if (!SCRIPT_URL) {
     document.getElementById('leaderboard-list').innerHTML =
-      '<p class="empty-msg error">SCRIPT_URL not set. Paste your Apps Script URL into index.html.</p>';
+      '<p class="empty-msg error">SCRIPT_URL not set.</p>';
     return;
   }
 
@@ -753,7 +998,7 @@ async function loadAndShowHistory() {
     renderPastGames(allGames);
   } catch {
     document.getElementById('leaderboard-list').innerHTML =
-      '<p class="empty-msg error">Could not load data. Check SCRIPT_URL and deploy settings (Execute as: Me, Who can access: Anyone).</p>';
+      '<p class="empty-msg error">Could not load data. Check SCRIPT_URL and deploy settings.</p>';
   }
 }
 
@@ -764,11 +1009,16 @@ function buildLeaderboard(games) {
     try { playerList = JSON.parse(g.playersJson); } catch { continue; }
     for (const p of playerList) {
       if (!p.name) continue;
-      if (!totals[p.name]) totals[p.name] = { score: 0, wins: 0, games: 0 };
-      totals[p.name].score  += Number(p.score) || 0;
-      totals[p.name].games  += 1;
-      const winners = (g.winner || '').split(' & ');
-      if (winners.includes(p.name)) totals[p.name].wins += 1;
+      if (!totals[p.name]) totals[p.name] = { score: 0, wins: 0, games: 0, turns: 0, red: 0, yellow: 0, black: 0, white: 0 };
+      const t = totals[p.name];
+      t.score  += Number(p.score)  || 0;
+      t.games  += 1;
+      t.turns  += Number(p.turns)  || 0;
+      t.red    += Number(p.red)    || 0;
+      t.yellow += Number(p.yellow) || 0;
+      t.black  += Number(p.black)  || 0;
+      t.white  += Number(p.white)  || 0;
+      if ((g.winner || '').split(' & ').includes(p.name)) t.wins += 1;
     }
   }
   return Object.entries(totals)
@@ -785,13 +1035,20 @@ function renderLeaderboard(games) {
     return;
   }
   const html = lb.map((p, i) => {
-    const cls   = p.score > 0 ? 'pos' : p.score < 0 ? 'neg' : 'zero';
-    const score = (p.score > 0 ? '+' : '') + p.score;
+    const cls    = p.score > 0 ? 'pos' : p.score < 0 ? 'neg' : 'zero';
+    const score  = (p.score > 0 ? '+' : '') + p.score;
+    const ptg    = p.games > 0 ? (p.score / p.games).toFixed(1) + ' pt/game' : '';
+    const bkd    = `\u{1F534}${p.red} \u{1F7E1}${p.yellow} ⚫${p.black} ⚪${p.white}`;
     return `<div class="lb-row">
       <span class="lb-rank">${medals[i] || (i + 1)}</span>
-      <span class="lb-name">${esc(p.name)}</span>
-      <span class="lb-stats">${p.wins}W &middot; ${p.games}G</span>
-      <span class="lb-score ${cls}">${score}</span>
+      <div style="flex:1;min-width:0">
+        <div class="lb-name">${esc(p.name)}</div>
+        <div class="lb-sub">${p.wins}W &middot; ${p.games}G &middot; ${bkd}</div>
+      </div>
+      <div class="lb-right">
+        <span class="lb-score ${cls}">${score}</span>
+        <span class="lb-sub">${ptg}</span>
+      </div>
     </div>`;
   }).join('');
   document.getElementById('leaderboard-list').innerHTML = html;
@@ -834,10 +1091,8 @@ function renderPastGames(games) {
 
 function esc(str) {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function formatDay(dateStr) {
@@ -858,21 +1113,11 @@ function showToast(msg) {
 </script>
 
 <!-- ════════════════════════════════════════════════ APPS SCRIPT (Code.gs) ═══
-Copy the code below into Google Apps Script to set up the backend.
+The Apps Script backend for this app. Sheet: "Sessions"
+Header row: Date | PlayersJSON | WinnerName
 
-1.  Go to sheets.google.com, create a new spreadsheet called "Pool Tracker".
-    Rename the first tab (sheet) to "Sessions".
-    Add this header row in row 1:  Date | PlayersJSON | WinnerName
-
-2.  Go to Extensions > Apps Script.
-    Replace all existing code with the function below.
-
-3.  Click Deploy > New Deployment > Web App.
-    - Execute as: Me
-    - Who has access: Anyone
-    Click Deploy, copy the deployment URL.
-
-4.  Paste the URL into the SCRIPT_URL constant at the top of this file.
+PlayersJSON stores a JSON array per game:
+  [{ name, score, red, yellow, black, white, turns }, ...]
 
 ─────────────────────────────────────────────────────────────────────────────
 
@@ -887,7 +1132,7 @@ function doGet(e) {
 
   // action === 'list'
   var rows = sheet.getDataRange().getValues();
-  rows.shift(); // remove header row
+  rows.shift();
   var games = rows
     .filter(function(r) { return r[0] !== ''; })
     .map(function(r) {
@@ -899,7 +1144,7 @@ function doGet(e) {
         winner:      String(r[2] || '')
       };
     });
-  games.reverse(); // newest first
+  games.reverse();
 
   return ContentService
     .createTextOutput(JSON.stringify(games))
@@ -907,9 +1152,7 @@ function doGet(e) {
 }
 
 ─────────────────────────────────────────────────────────────────────────────
-To update the deployment after editing Code.gs:
-  Deploy > Manage Deployments > Edit (pencil icon) > Version: New version > Deploy.
-  Copy the new URL and update SCRIPT_URL if it changed.
+To update deployment: Deploy > Manage Deployments > Edit > New version > Deploy.
 ════════════════════════════════════════════════════════════════════════════ -->
 
 </body>
