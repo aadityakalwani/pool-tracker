@@ -131,7 +131,7 @@
 
     #add-player-btn:active { background: var(--border); }
 
-    #start-btn {
+    #start-btn, #points-start-btn {
       width: 100%;
       background: var(--accent);
       color: #000;
@@ -145,7 +145,9 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    #start-btn:active { opacity: 0.8; }
+    #start-btn:active, #points-start-btn:active { opacity: 0.8; }
+
+    #points-start-btn { margin-top: 20px; }
 
     /* ── Game screen ── */
     #current-player-banner {
@@ -566,6 +568,66 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ POINTS SCREEN ═══ -->
+<div id="screen-points" class="screen">
+  <header class="app-header">
+    <h1>Point Values</h1>
+    <span style="width:52px"></span>
+  </header>
+  <div class="setup-body">
+    <h2>Set Point Values</h2>
+    <p class="setup-hint">Adjust scoring for this game. Saved as your default for next time.</p>
+
+    <div class="stepper-row">
+      <span class="stepper-icon">&#128308;</span>
+      <span class="stepper-label">Red</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustPointValue('red', -1)">&#8722;</button>
+        <span class="stepper-count" id="pv-red">+1</span>
+        <button class="stepper-btn" onclick="adjustPointValue('red', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#128993;</span>
+      <span class="stepper-label">Yellow</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustPointValue('yellow', -1)">&#8722;</button>
+        <span class="stepper-count" id="pv-yellow">+2</span>
+        <button class="stepper-btn" onclick="adjustPointValue('yellow', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#9899;</span>
+      <span class="stepper-label">Black</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustPointValue('black', -1)">&#8722;</button>
+        <span class="stepper-count" id="pv-black">+5</span>
+        <button class="stepper-btn" onclick="adjustPointValue('black', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#9898;</span>
+      <span class="stepper-label">Cue Ball</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustPointValue('white', -1)">&#8722;</button>
+        <span class="stepper-count" id="pv-white">&#8722;3</span>
+        <button class="stepper-btn" onclick="adjustPointValue('white', +1)">+</button>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <span class="stepper-icon">&#128683;</span>
+      <span class="stepper-label">Miss / No Pot</span>
+      <div class="stepper-controls">
+        <button class="stepper-btn" onclick="adjustPointValue('miss', -1)">&#8722;</button>
+        <span class="stepper-count" id="pv-miss">0</span>
+        <button class="stepper-btn" onclick="adjustPointValue('miss', +1)">+</button>
+      </div>
+    </div>
+
+    <button id="points-start-btn" onclick="confirmPointsAndStart()">Start Game</button>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════════════════════ GAME SCREEN ═══ -->
 <div id="screen-game" class="screen">
   <div id="current-player-banner">
@@ -579,26 +641,26 @@
     <button class="action-btn btn-red" onclick="recordPot('red')">
       <span class="ball-icon">&#128308;</span>
       <span class="ball-label">Red</span>
-      <span class="ball-pts">+1 pt</span>
+      <span class="ball-pts" id="btnpts-red">+1 pt</span>
     </button>
     <button class="action-btn btn-yellow" onclick="recordPot('yellow')">
       <span class="ball-icon">&#128993;</span>
       <span class="ball-label">Yellow</span>
-      <span class="ball-pts">+2 pts</span>
+      <span class="ball-pts" id="btnpts-yellow">+2 pts</span>
     </button>
     <button class="action-btn btn-black" onclick="recordPot('black')">
       <span class="ball-icon">&#9899;</span>
       <span class="ball-label">Black</span>
-      <span class="ball-pts">+5 pts</span>
+      <span class="ball-pts" id="btnpts-black">+5 pts</span>
     </button>
     <button class="action-btn btn-white" onclick="recordPot('white')">
       <span class="ball-icon">&#9898;</span>
       <span class="ball-label">Cue Ball</span>
-      <span class="ball-pts">&#8722;3 pts</span>
+      <span class="ball-pts" id="btnpts-white">&#8722;3 pts</span>
     </button>
     <button class="action-btn btn-miss" onclick="recordPot('miss')">
       <span class="ball-label">Miss / No Pot</span>
-      <span class="ball-pts">0 pts &mdash; advance turn</span>
+      <span class="ball-pts" id="btnpts-miss">0 pts &mdash; advance turn</span>
     </button>
     <button class="action-btn btn-custom" onclick="openCustomModal()">
       <span class="ball-label">&#10010; Custom Pot</span>
@@ -646,7 +708,7 @@
     <div class="stepper-row">
       <span class="stepper-icon">&#128308;</span>
       <span class="stepper-label">Red</span>
-      <span class="stepper-pts">+1 each</span>
+      <span class="stepper-pts" id="custpts-red">+1 each</span>
       <div class="stepper-controls">
         <button class="stepper-btn" onclick="adjustCustom('red', -1)">&#8722;</button>
         <span class="stepper-count" id="cust-red">0</span>
@@ -656,7 +718,7 @@
     <div class="stepper-row">
       <span class="stepper-icon">&#128993;</span>
       <span class="stepper-label">Yellow</span>
-      <span class="stepper-pts">+2 each</span>
+      <span class="stepper-pts" id="custpts-yellow">+2 each</span>
       <div class="stepper-controls">
         <button class="stepper-btn" onclick="adjustCustom('yellow', -1)">&#8722;</button>
         <span class="stepper-count" id="cust-yellow">0</span>
@@ -666,7 +728,7 @@
     <div class="stepper-row">
       <span class="stepper-icon">&#9899;</span>
       <span class="stepper-label">Black</span>
-      <span class="stepper-pts">+5 each</span>
+      <span class="stepper-pts" id="custpts-black">+5 each</span>
       <div class="stepper-controls">
         <button class="stepper-btn" onclick="adjustCustom('black', -1)">&#8722;</button>
         <span class="stepper-count" id="cust-black">0</span>
@@ -676,7 +738,7 @@
     <div class="stepper-row">
       <span class="stepper-icon">&#9898;</span>
       <span class="stepper-label">Cue Ball</span>
-      <span class="stepper-pts">&#8722;3 each</span>
+      <span class="stepper-pts" id="custpts-white">&#8722;3 each</span>
       <div class="stepper-controls">
         <button class="stepper-btn" onclick="adjustCustom('white', -1)">&#8722;</button>
         <span class="stepper-count" id="cust-white">0</span>
@@ -698,8 +760,9 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMwQusDi2Ymu0IiYkfR_2pKRwY7gckY0JKjq8242tfR2Cnp0emKW8XGI0Rq9knxCX9/exec";
 // ─────────────────────────────────────────────────────────────────────────────
 
-const POINT_VALUES = { red: 1, yellow: 2, black: 5, white: -3, miss: 0 };
-const LS_NAMES_KEY = 'pool_player_names';
+const DEFAULT_POINT_VALUES = { red: 1, yellow: 2, black: 5, white: -3, miss: 0 };
+const LS_NAMES_KEY  = 'pool_player_names';
+const LS_POINTS_KEY = 'pool_point_values';
 const MIN_PLAYERS  = 2;
 const MAX_PLAYERS  = 8;
 
@@ -711,6 +774,16 @@ let turnCount  = 0;
 // Each undo entry: { playerIdx, playersSnapshot: deep copy of players array }
 let undoStack  = [];
 let allGames   = [];
+
+// Point values per ball type, editable on the points screen, persisted across games
+let pointValues = { ...DEFAULT_POINT_VALUES };
+try {
+  const saved = JSON.parse(localStorage.getItem(LS_POINTS_KEY) || 'null');
+  if (saved) pointValues = { ...DEFAULT_POINT_VALUES, ...saved };
+} catch {}
+
+// Player names carried from the setup screen to the points screen
+let pendingNames = [];
 
 // Custom pot state
 let customCounts = { red: 0, yellow: 0, black: 0, white: 0 };
@@ -780,11 +853,53 @@ function readPlayerNames() {
 function startGame() {
   const names = readPlayerNames();
   localStorage.setItem(LS_NAMES_KEY, JSON.stringify(names));
-  players    = names.map(n => ({ name: n, score: 0, red: 0, yellow: 0, black: 0, white: 0, turns: 0 }));
+  pendingNames = names;
+  renderPointsScreen();
+  showScreen('points');
+}
+
+// ── Points screen ─────────────────────────────────────────────────────────────
+
+function formatPts(val) {
+  const unit = Math.abs(val) === 1 ? 'pt' : 'pts';
+  if (val > 0) return '+' + val + ' ' + unit;
+  if (val < 0) return '−' + Math.abs(val) + ' ' + unit;
+  return '0 ' + unit;
+}
+
+function formatNum(val) {
+  if (val > 0) return '+' + val;
+  if (val < 0) return '−' + Math.abs(val);
+  return '0';
+}
+
+function renderPointsScreen() {
+  Object.keys(pointValues).forEach(b => {
+    document.getElementById('pv-' + b).textContent = formatNum(pointValues[b]);
+  });
+}
+
+function adjustPointValue(ball, dir) {
+  pointValues[ball] += dir;
+  document.getElementById('pv-' + ball).textContent = formatNum(pointValues[ball]);
+}
+
+function updateActionButtonLabels() {
+  document.getElementById('btnpts-red').textContent    = formatPts(pointValues.red);
+  document.getElementById('btnpts-yellow').textContent = formatPts(pointValues.yellow);
+  document.getElementById('btnpts-black').textContent  = formatPts(pointValues.black);
+  document.getElementById('btnpts-white').textContent  = formatPts(pointValues.white);
+  document.getElementById('btnpts-miss').textContent   = formatPts(pointValues.miss) + ' — advance turn';
+}
+
+function confirmPointsAndStart() {
+  localStorage.setItem(LS_POINTS_KEY, JSON.stringify(pointValues));
+  players    = pendingNames.map(n => ({ name: n, score: 0, red: 0, yellow: 0, black: 0, white: 0, turns: 0 }));
   currentIdx = 0;
   turnCount  = 0;
   undoStack  = [];
   buildScoreStrip();
+  updateActionButtonLabels();
   renderGameScreen();
   showScreen('game');
 }
@@ -811,7 +926,7 @@ function snapshotPlayers() {
 function recordPot(ballType) {
   undoStack.push({ playerIdx: currentIdx, snap: snapshotPlayers() });
   const p = players[currentIdx];
-  p.score  += POINT_VALUES[ballType];
+  p.score  += pointValues[ballType];
   p.turns  += 1;
   if (ballType !== 'miss') p[ballType] = (p[ballType] || 0) + 1;
   currentIdx = (currentIdx + 1) % players.length;
@@ -858,9 +973,10 @@ function renderGameScreen() {
 
 function openCustomModal() {
   customCounts = { red: 0, yellow: 0, black: 0, white: 0 };
-  ['red','yellow','black','white'].forEach(b =>
-    document.getElementById('cust-' + b).textContent = '0'
-  );
+  ['red','yellow','black','white'].forEach(b => {
+    document.getElementById('cust-' + b).textContent = '0';
+    document.getElementById('custpts-' + b).textContent = formatPts(pointValues[b]) + ' each';
+  });
   updateCustomNet();
   document.getElementById('custom-modal-title').textContent =
     'Custom Pot — ' + players[currentIdx].name;
@@ -880,8 +996,8 @@ function adjustCustom(ball, dir) {
 }
 
 function updateCustomNet() {
-  const net = customCounts.red * 1 + customCounts.yellow * 2 +
-              customCounts.black * 5 + customCounts.white * (-3);
+  const net = customCounts.red * pointValues.red + customCounts.yellow * pointValues.yellow +
+              customCounts.black * pointValues.black + customCounts.white * pointValues.white;
   document.getElementById('custom-net').textContent =
     (net > 0 ? '+' : '') + net;
   document.getElementById('btn-apply-custom').textContent =
@@ -892,8 +1008,8 @@ function applyCustom() {
   const total = Object.values(customCounts).reduce((s, v) => s + v, 0);
   if (total === 0) { showToast('Select at least one ball'); return; }
 
-  const net = customCounts.red * 1 + customCounts.yellow * 2 +
-              customCounts.black * 5 + customCounts.white * (-3);
+  const net = customCounts.red * pointValues.red + customCounts.yellow * pointValues.yellow +
+              customCounts.black * pointValues.black + customCounts.white * pointValues.white;
 
   undoStack.push({ playerIdx: currentIdx, snap: snapshotPlayers() });
 
