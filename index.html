@@ -589,7 +589,7 @@
     <button class="action-btn btn-black" onclick="recordPot('black')">
       <span class="ball-icon">&#9899;</span>
       <span class="ball-label">Black</span>
-      <span class="ball-pts">+10 pts</span>
+      <span class="ball-pts">+5 pts</span>
     </button>
     <button class="action-btn btn-white" onclick="recordPot('white')">
       <span class="ball-icon">&#9898;</span>
@@ -666,7 +666,7 @@
     <div class="stepper-row">
       <span class="stepper-icon">&#9899;</span>
       <span class="stepper-label">Black</span>
-      <span class="stepper-pts">+10 each</span>
+      <span class="stepper-pts">+5 each</span>
       <div class="stepper-controls">
         <button class="stepper-btn" onclick="adjustCustom('black', -1)">&#8722;</button>
         <span class="stepper-count" id="cust-black">0</span>
@@ -698,7 +698,7 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMwQusDi2Ymu0IiYkfR_2pKRwY7gckY0JKjq8242tfR2Cnp0emKW8XGI0Rq9knxCX9/exec";
 // ─────────────────────────────────────────────────────────────────────────────
 
-const POINT_VALUES = { red: 1, yellow: 2, black: 10, white: -3, miss: 0 };
+const POINT_VALUES = { red: 1, yellow: 2, black: 5, white: -3, miss: 0 };
 const LS_NAMES_KEY = 'pool_player_names';
 const MIN_PLAYERS  = 2;
 const MAX_PLAYERS  = 8;
@@ -881,7 +881,7 @@ function adjustCustom(ball, dir) {
 
 function updateCustomNet() {
   const net = customCounts.red * 1 + customCounts.yellow * 2 +
-              customCounts.black * 10 + customCounts.white * (-3);
+              customCounts.black * 5 + customCounts.white * (-3);
   document.getElementById('custom-net').textContent =
     (net > 0 ? '+' : '') + net;
   document.getElementById('btn-apply-custom').textContent =
@@ -893,7 +893,7 @@ function applyCustom() {
   if (total === 0) { showToast('Select at least one ball'); return; }
 
   const net = customCounts.red * 1 + customCounts.yellow * 2 +
-              customCounts.black * 10 + customCounts.white * (-3);
+              customCounts.black * 5 + customCounts.white * (-3);
 
   undoStack.push({ playerIdx: currentIdx, snap: snapshotPlayers() });
 
